@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SimpleWebCrawler.Core.Parsers.Interfaces
+{
+    public interface IRobotTextParser
+    { 
+        public List<string>? SiteMapURLs { get; set; }
+
+        public List<string>? IgnorePaths { get; set; }
+
+        public void Process(string source);
+    }
+}
