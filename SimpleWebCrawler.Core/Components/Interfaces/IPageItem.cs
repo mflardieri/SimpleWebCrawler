@@ -1,9 +1,4 @@
 ﻿using SimpleWebCrawler.Core.Components.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleWebCrawler.Core.Components.Interfaces
 {
@@ -13,5 +8,6 @@ namespace SimpleWebCrawler.Core.Components.Interfaces
         public bool IsExternalPage { get; set; }
         public bool WasOnSiteMap { get; set; }
         public List<SearchPageItem>? PageItems { get; set; }
+        public string? FirstParentUrl { get; set; }
     }
 }

@@ -1,14 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using SimpleWebCrawler.Core.Parsers.Interfaces;
 using SimpleWebCrawler.Core.Parsers.Models;
 using SimpleWebCrawler.Core.Processors.Interfaces;
 using SimpleWebCrawler.Core.Processors.Models;
 using SimpleWebCrawler.Core.Results.Models;
 using SimpleWebCrawler.Core.Tests.Models;
-using System;
-using System.Net.WebSockets;
 
 namespace SimpleWebCrawler.Core.Tests
 {

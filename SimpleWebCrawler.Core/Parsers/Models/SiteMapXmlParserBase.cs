@@ -43,7 +43,7 @@ namespace SimpleWebCrawler.Core.Parsers.Models
                                     if (!string.IsNullOrWhiteSpace(item.Loc))
                                     {
                                         siteMap.Items.Add(item);
-                                        if (node.Name == "sitemap" && item.Loc.ToLower().EndsWith("sitemap.xml"))
+                                        if (node.Name == "sitemap" && item.Loc.ToLower().EndsWith(".xml"))
                                         {
                                             siteResult.SiteMaps.Add(new SiteMap() { URL = item.Loc });
                                         }

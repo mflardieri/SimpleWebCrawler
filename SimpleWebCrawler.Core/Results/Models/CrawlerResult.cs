@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using SimpleWebCrawler.Core.Components.Models;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using SimpleWebCrawler.Core.Components.Models;
 
 namespace SimpleWebCrawler.Core.Results.Models
 {

@@ -1,5 +1,4 @@
 ﻿using SimpleWebCrawler.Core.Components.Interfaces;
-using System.Text.Json.Serialization;
 
 namespace SimpleWebCrawler.Core.Components.Models
 {

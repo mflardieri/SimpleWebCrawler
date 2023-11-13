@@ -52,6 +52,16 @@ namespace SimpleWebCrawler
             siteProcessor.ProcessPageAsync(siteResult, "https://www.google.com").Wait();
             //var siteResult = siteProcessor.CreateSiteResult("https://acme.com");
             //siteProcessor.ProcessSiteAsync(siteResult).Wait();//Long run process
+            if (siteResult != null)
+            {
+
+                siteResult.ToJsonFile("output_current.json");
+                var issues = siteProcessor.ConvertToPageIssues(siteResult);
+                if (issues != null && issues.Count > 0)
+                {
+                    issues.ToJsonFile("output_issues_current.json");
+                }
+            }
             Console.WriteLine("Done!");
         }
         static void ConfigureServices(ServiceCollection services)
@@ -92,6 +102,7 @@ namespace SimpleWebCrawler
             //SiteResult? siteResult = JsonHelpers.FromJsonFile<SiteResult>("output.json");
             /*if (siteResults != null)
             {
+                //siteProcessor.ReApplyIssues(siteResults);
                 var issues = siteProcessor.ConvertToPageIssues(siteResults);
                 if (issues != null && issues.Count > 0)
                 {

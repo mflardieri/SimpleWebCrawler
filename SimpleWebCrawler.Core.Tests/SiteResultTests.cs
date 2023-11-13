@@ -1,11 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SimpleWebCrawler.Core.Processors.Models;
-using SimpleWebCrawler.Core.Results.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SimpleWebCrawler.Core.Results.Models;
 
 namespace SimpleWebCrawler.Core.Tests
 {

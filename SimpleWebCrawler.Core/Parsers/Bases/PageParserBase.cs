@@ -1,14 +1,7 @@
-﻿using SimpleWebCrawler.Core.Results.Models;
-using System;
-using System.Collections.Generic;
+﻿using SimpleWebCrawler.Core.Parsers.Interfaces;
+using SimpleWebCrawler.Core.Results.Models;
 using System.Diagnostics;
-using System.Linq;
-using System.Net.Http;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using SimpleWebCrawler.Core.Parsers.Interfaces;
 
 namespace SimpleWebCrawler.Core.Parsers.Bases
 {

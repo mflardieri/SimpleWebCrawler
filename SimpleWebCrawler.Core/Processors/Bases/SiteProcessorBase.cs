@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleWebCrawler.Core.Components.Interfaces;
 using SimpleWebCrawler.Core.Components.Models;
@@ -6,20 +7,10 @@ using SimpleWebCrawler.Core.Helpers;
 using SimpleWebCrawler.Core.Parsers.Interfaces;
 using SimpleWebCrawler.Core.Parsers.Models;
 using SimpleWebCrawler.Core.Processors.Interfaces;
-using SimpleWebCrawler.Core.Processors.Models;
 using SimpleWebCrawler.Core.Results.Models;
 using SimpleWebCrawler.Core.Settings.Models;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 
 
 namespace SimpleWebCrawler.Core.Processors.Bases
@@ -195,7 +186,7 @@ namespace SimpleWebCrawler.Core.Processors.Bases
                                     showProgressInterval = sw.Elapsed.Minutes;
                                     _logger.LogInformation($">>>>>>>>Run: {run} Left: {results.Count - processed} Processed: {_pageProcessed.Count} <<<<<<<<<< Duration: {sw.Elapsed.ToString(@"dd\.hh\:mm\:ss")}");
                                 }
-                                
+
                                 lock (_pageChangeLock)
                                 {
                                     if (result.Url != null && result.Url.AbsoluteUri != null && !_pageChecks.Contains(result.Url.AbsoluteUri) && !_pageProcessed.Contains(result.Url.AbsoluteUri))
@@ -256,7 +247,6 @@ namespace SimpleWebCrawler.Core.Processors.Bases
                         if (source.PageTrys > 1) { source.PageTrys--; }
                     }
 
-
                     if (result != null)
                     {
                         source.HasIssues = false;
@@ -267,7 +257,7 @@ namespace SimpleWebCrawler.Core.Processors.Bases
                         {
                             _logger.LogInformation($"resolved: {source.Url} => {source.PageTrys}");
                         }
-                        if (result.IsSuccess)
+                        if (result.IsSuccess || source.PageTrys >= _pageReTryThreshold)
                         {
                             if (!source.IsExternalPage && !string.IsNullOrWhiteSpace(result.Response) && _pageHtmlParser != null && _pagePointOfInterestStrategy != null)
                             {
@@ -288,9 +278,18 @@ namespace SimpleWebCrawler.Core.Processors.Bases
                                                     SearchPage? sp = siteResult.BuildSearchPageEntry(searchPageItem.Url, false);
                                                     if (sp != null)
                                                     {
-                                                        if (siteResult.PageResults != null && sp.Url != null && !siteResult.IgnoreUrl(sp.Url.AbsoluteUri) && !sp.IsExternalPage && siteResult.PageResults.FirstOrDefault(x => x.Url != null && x.Url.AbsoluteUri == sp.Url.AbsoluteUri) == null)
+                                                        sp.FirstParentUrl = searchPageItem.ParentUrl;
+                                                        if (siteResult.PageResults != null && sp.Url != null && !siteResult.IgnoreUrl(sp.Url.AbsoluteUri) && !sp.IsExternalPage)
                                                         {
-                                                            siteResult.PageResults.Add(sp);
+                                                            var xsp = siteResult.PageResults.FirstOrDefault(x => x.Url != null && x.Url.AbsoluteUri == sp.Url.AbsoluteUri);
+                                                            if (xsp == null)
+                                                            {
+                                                                siteResult.PageResults.Add(sp);
+                                                            }
+                                                            else 
+                                                            {
+                                                                xsp.FirstParentUrl ??= sp.FirstParentUrl;
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -330,7 +329,7 @@ namespace SimpleWebCrawler.Core.Processors.Bases
                 {
                     foreach (var pageResult in siteResult.PageResults)
                     {
-                        PageIssue pi = new PageIssue() { Url = pageResult.Url };
+                        PageIssue pi = new PageIssue() { Url = pageResult.Url, FirstParentUrl = pageResult.FirstParentUrl };
                         if (pageResult.HasIssues || pageResult.Issues != null && pageResult.Url != null)
                         {
                             pi.Issues = new List<string>();
@@ -440,6 +439,7 @@ namespace SimpleWebCrawler.Core.Processors.Bases
                         await GetSiteMapItems(source, map, addToCrawl);
                     }
                 }
+                Console.WriteLine();
             }
         }
 

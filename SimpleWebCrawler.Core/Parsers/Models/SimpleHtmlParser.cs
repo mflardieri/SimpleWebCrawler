@@ -77,7 +77,7 @@ namespace SimpleWebCrawler.Core.Parsers.Models
                             {
                                 if (!ele.Attributes.ContainsKey(attributeName.ToLower()))
                                 {
-                                    ele.Attributes.Add(attributeName.ToLower(), attributeValue.ToLower());
+                                    ele.Attributes.Add(attributeName.ToLower(), attributeValue);
                                 }
                             }
                         }

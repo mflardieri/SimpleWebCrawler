@@ -1,7 +1,6 @@
 ﻿using SimpleWebCrawler.Core.Components.Enums;
 using SimpleWebCrawler.Core.Components.Interfaces;
 using System.Net;
-using System.Text.Json.Serialization;
 
 namespace SimpleWebCrawler.Core.Components.Models
 {
@@ -25,5 +24,6 @@ namespace SimpleWebCrawler.Core.Components.Models
         public string? MetaKeywords { get; set; }
         public string? MetaDescription { get; set; }
         public string? MetaRobots { get; set; }
+        public string? FirstParentUrl { get; set; }
     }
 }

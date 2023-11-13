@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SimpleWebCrawler.Core.Components.Enums;
-using SimpleWebCrawler.Core.Components.Interfaces;
+﻿using SimpleWebCrawler.Core.Components.Enums;
 using SimpleWebCrawler.Core.Components.Models;
 
 namespace SimpleWebCrawler.Core.Results.Models
@@ -16,8 +10,6 @@ namespace SimpleWebCrawler.Core.Results.Models
         public List<SiteMap>? SiteMaps { get; set; }
         public List<PagePointOfInterestCheck>? pagePointOfInterestChecks { get; set; }
         public List<string>? RobotIgnorePaths { get; set; }
-        public Dictionary<string, CrawlerResult>? AlphaCrawlerResults { get; set; }
-
         public List<SearchPage>? PageResults { get; set; }
 
 

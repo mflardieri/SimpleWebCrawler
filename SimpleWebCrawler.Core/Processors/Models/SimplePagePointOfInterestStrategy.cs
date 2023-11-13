@@ -3,33 +3,26 @@ using SimpleWebCrawler.Core.Components.Interfaces;
 using SimpleWebCrawler.Core.Components.Models;
 using SimpleWebCrawler.Core.Processors.Interfaces;
 using SimpleWebCrawler.Core.Results.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security.Permissions;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SimpleWebCrawler.Core.Parsers.Models
+namespace SimpleWebCrawler.Core.Processors.Models
 {
     public class SimplePagePointOfInterestStrategy : IPagePointOfInterestStrategy
     {
         public void PostChecks(SiteResult siteResult, ISearchPage searchPage)
         {
             if (searchPage.Issues == null) { searchPage.Issues = new List<string>(); }
+            if ((int)searchPage.StatusCode > 299)
+            {
+                searchPage.Issues.Add($"Page Responsed with: {(int)searchPage.StatusCode} ... {searchPage.StatusCode}");
+            }
+            if (searchPage.WasHttp)
+            {
+                searchPage.Issues.Add("Http protocol on url.");
+            }
+            //Set Load Speed
+
             if (searchPage.PageItems != null && searchPage.PageItems.Count > 0)
             {
-                if (searchPage.WasHttp)
-                {
-                    searchPage.Issues.Add("Http protocol on url.");
-                }
-                if ((int)searchPage.StatusCode > 299)
-                { 
-                    searchPage.Issues.Add($"Page Responsed with: {((int)searchPage.StatusCode)} ... {searchPage.StatusCode}");
-                }
-                //Set Load Speed
                 if (searchPage.LoadTime != null)
                 {
                     if (searchPage.LoadTime.Value.TotalSeconds < 1)
@@ -53,22 +46,21 @@ namespace SimpleWebCrawler.Core.Parsers.Models
                         searchPage.LoadSpeed = PageLoadSpeed.SuperSlow;
                     }
                 }
-                if (searchPage.LoadSpeed != PageLoadSpeed.None && 
-                    searchPage.LoadSpeed != PageLoadSpeed.SuperFast && 
-                    searchPage.LoadSpeed != PageLoadSpeed.Fast && 
+                if (searchPage.LoadSpeed != PageLoadSpeed.None &&
+                    searchPage.LoadSpeed != PageLoadSpeed.SuperFast &&
+                    searchPage.LoadSpeed != PageLoadSpeed.Fast &&
                     searchPage.LoadSpeed != PageLoadSpeed.Medium && searchPage.LoadTime.HasValue)
                 {
- 
+
                     searchPage.Issues.Add($"Page Load Time: {searchPage.LoadTime.Value.ToString(@"dd\.hh\:mm\:ss")} is {searchPage.LoadSpeed}");
                     Console.Write("");
                 }
-                
                 if (string.IsNullOrWhiteSpace(searchPage.MetaDescription))
                 {
                     searchPage.Issues.Add("Has no meta description for page.");
                 }
                 else
-                { 
+                {
                     if (searchPage.MetaDescription.Length < 150)
                     {
                         searchPage.Issues.Add("Meta description is too short. Make it between 150 to 160 charaters.");
@@ -93,50 +85,50 @@ namespace SimpleWebCrawler.Core.Parsers.Models
                 }
                 else
                 {
-                    if (searchPage.PageTitle.Length < 30)
+                    if (searchPage.PageTitle.Length < 50)
                     {
-                        searchPage.Issues.Add("Page Title is too short. Make it between 30 to 60 charaters.");
+                        searchPage.Issues.Add("Page Title is too short. Make it between 50 to 60 charaters.");
                     }
                     if (searchPage.PageTitle.Length > 60)
                     {
-                        searchPage.Issues.Add("Page Title is too long. Make it between 30 to 60 charaters.");
+                        searchPage.Issues.Add("Page Title is too long. Make it between 50 to 60 charaters.");
                     }
                 }
                 if (searchPage.WasOnSiteMap && searchPage.HasIssues)
                 {
                     searchPage.Issues.Add("This page is on the site map with issues");
                 }
-            }
-            if (!searchPage.IsExternalPage && searchPage.PagePointOfInterests != null)
-            {
-                //Text plus link url
-                //Duplicate Links on a page
-                if (searchPage.PagePointOfInterests != null && searchPage.PageItems != null)
+                if (!searchPage.IsExternalPage && searchPage.PagePointOfInterests != null)
                 {
-                    HashSet<string> duplinks = new HashSet<string>();
-
-                    var DuplicateLinksChecks = searchPage.PagePointOfInterests.FirstOrDefault(x => x.PointOfInterestCheck == PagePointOfInterestCheck.DuplicatedLinks);
-                    foreach (var item in searchPage.PageItems)
+                    //Text plus link url
+                    //Duplicate Links on a page
+                    if (searchPage.PagePointOfInterests != null && searchPage.PageItems != null)
                     {
-                        if (item.Issues == null) { item.Issues = new List<string>(); }
-                        if (DuplicateLinksChecks != null && item.Url != null && item.HtmlNode != null && item.HtmlNode.Node == "a")
+                        HashSet<string> duplinks = new HashSet<string>();
+
+                        var DuplicateLinksChecks = searchPage.PagePointOfInterests.FirstOrDefault(x => x.PointOfInterestCheck == PagePointOfInterestCheck.DuplicatedLinks);
+                        foreach (var item in searchPage.PageItems)
                         {
-                            string linkCheck = $"{item.Url}=>{item.HtmlNode.Text}";
-                            if (duplinks.Contains(linkCheck))
+                            if (item.Issues == null) { item.Issues = new List<string>(); }
+                            if (DuplicateLinksChecks != null && item.Url != null && item.HtmlNode != null && item.HtmlNode.Node == "a")
                             {
-                                searchPage.HasIssues = true;
-                                DuplicateLinksChecks.IssueFound = true;
-                                item.Issues.Add($"Duplicate Link: '{item.HtmlNode.Node}' Text:'{item.HtmlNode.Text}' Link: {item.Url} at Index: {item.HtmlNode.Index}");
-                            }
-                            else
-                            {
-                                duplinks.Add(linkCheck);
+                                string linkCheck = $"{item.Url}=>{item.HtmlNode.Text}";
+                                if (duplinks.Contains(linkCheck))
+                                {
+                                    searchPage.HasIssues = true;
+                                    DuplicateLinksChecks.IssueFound = true;
+                                    item.Issues.Add($"Duplicate Link: '{item.HtmlNode.Node}' Text:'{item.HtmlNode.Text}' Link: {item.Url} at Index: {item.HtmlNode.Index}");
+                                }
+                                else
+                                {
+                                    duplinks.Add(linkCheck);
+                                }
                             }
                         }
                     }
                 }
-            }
 
+            }
 
             if (!searchPage.HasIssues && searchPage.Issues.Count > 0) { searchPage.HasIssues = true; }
         }
@@ -170,7 +162,7 @@ namespace SimpleWebCrawler.Core.Parsers.Models
                     case "title":
                         if (!string.IsNullOrWhiteSpace(searchPageItem.HtmlNode.Text) && string.IsNullOrWhiteSpace(searchPage.PageTitle))
                         {
-                            searchPage.PageTitle = searchPageItem.HtmlNode.Text;
+                            searchPage.PageTitle = System.Net.WebUtility.HtmlDecode(searchPageItem.HtmlNode.Text);
                         }
                         break;
                     case "a":
@@ -188,7 +180,7 @@ namespace SimpleWebCrawler.Core.Parsers.Models
                                 {
                                     searchPageItem.HtmlNodeUrl = kv.Value;
                                 }
-                                else if (kv.Key == "alt")
+                                else if (kv.Key == "alt" && !string.IsNullOrWhiteSpace(altValue))
                                 {
                                     altValue = kv.Value;
                                 }
@@ -207,7 +199,7 @@ namespace SimpleWebCrawler.Core.Parsers.Models
                                 searchPage.HasIssues = true;
                                 searchPageItem.Issues.Add($"Node: '{searchPageItem.HtmlNode.Node}' Text: '{searchPageItem.HtmlNode.Text}' at index {searchPageItem.HtmlNode.Index} has no alt/title text. URL: {searchPageItem.HtmlNodeUrl}");
                             }
-                            else if(altValue.Length > 60)
+                            else if (altValue.Length > 60)
                             {
                                 searchPage.HasIssues = true;
                                 searchPageItem.Issues.Add($"Node: '{searchPageItem.HtmlNode.Node}' Text: '{searchPageItem.HtmlNode.Text}' at index {searchPageItem.HtmlNode.Index} alt/title text is too long. Keep in under 60 characters. URL: {searchPageItem.HtmlNodeUrl}");
@@ -229,7 +221,7 @@ namespace SimpleWebCrawler.Core.Parsers.Models
                                             case "description":
                                                 if (string.IsNullOrWhiteSpace(searchPage.MetaDescription))
                                                 {
-                                                    searchPage.MetaDescription = content;
+                                                    searchPage.MetaDescription = System.Net.WebUtility.HtmlDecode(content);
                                                 }
                                                 break;
                                             case "keywords":
