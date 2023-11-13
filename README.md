@@ -1,5 +1,7 @@
 # SimpleWebCrawler
-## Basic info
+## Basic info [
+
+![.NET Core](https://github.com/mflardieri/SimpleWebCrawler/actions/workflows/dotnet-core.yml/badge.svg)](https://github.com/mflardieri/SimpleWebCrawler/actions/workflows/dotnet-core.yml)
 
 This project is a simple implementation of a Web crawler with some basic SEO checks written in C# (.NET7 / VS 2022).
 You can either crawl a single page or website.
